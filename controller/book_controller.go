@@ -83,15 +83,17 @@ func (controller *BookController) FindAll(writer http.ResponseWriter, requests *
 func (controller *BookController) FindById(writer http.ResponseWriter, requests *http.Request, params httprouter.Params) {
 	bookId := params.ByName("bookId")
 	id, err := strconv.Atoi(bookId)
-	helper.PanicIfError(err)
+	err = helper.PanicWebIfError(writer, err)
+	if err != nil {
+		return
+	}
 
-	result := controller.BookService.FindById(requests.Context(), id)
+	result, err := controller.BookService.FindById(requests.Context(), id)
 	webResponse := response.WebResponse{
-		Code:   200,
-		Status: "Ok",
-		Data:   result,
+		Code:   helper.IfThenElse(err != nil, 404, 200).(int),
+		Status: helper.IfThenElse(err != nil, "Error", "ok").(string),
+		Data:   helper.IfThenElse(err != nil, err.Error(), result),
 	}
 
 	helper.WriteResponseBody(writer, webResponse)
-
 }

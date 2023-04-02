@@ -47,10 +47,10 @@ func (b *BookServiceImpl) FindAll(ctx context.Context) []response.BookResponse {
 }
 
 // FindById implements BookService
-func (b *BookServiceImpl) FindById(ctx context.Context, bookId int) response.BookResponse {
+func (b *BookServiceImpl) FindById(ctx context.Context, bookId int) (response.BookResponse, error) {
 	book, err := b.BookRepository.FindById(ctx, bookId)
-	helper.PanicIfError(err)
-	return response.BookResponse(book)
+	//helper.PanicIfError(err)
+	return response.BookResponse(book), err
 }
 
 // Update implements BookService
